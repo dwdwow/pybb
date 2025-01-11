@@ -36,7 +36,9 @@ import requests
 # https://github.com/BlockBeatsOfficial/RESTful-API
 base_url = "https://api.theblockbeats.news/v1/open-api"
 
-D = TypeVar("D")
+Data = TypedDict("Data", {"link": str, "create_time": int, "title": str, "content": str, "pic": str})
+
+D = TypeVar("D", bound=Data)
 
 Page = TypedDict("Page", {"page": int, "data": List[D]})
 
@@ -63,7 +65,7 @@ Article = TypedDict("Article", {
     "is_original": bool
 })
 
-def get(path: str, size=10, page=1, lang="en") -> List[D]:
+def fetch(path: str, size=10, page=1, lang="en") -> List[D]:
     url = f"{base_url}/{path.lstrip('/')}?size={size}&page={page}&lang={lang}"
     response = requests.get(url)
     if response.status_code != 200:
@@ -74,14 +76,14 @@ def get(path: str, size=10, page=1, lang="en") -> List[D]:
     return d["data"]["data"]
 
 
-def flash_news(size=10, page=1, lang="en") -> List[FlashNews]:
-    return get("open-flash", size, page, lang)
+def fetch_flash_news(size=10, page=1, lang="en") -> List[FlashNews]:
+    return fetch("open-flash", size, page, lang)
 
 
-def articles(size=10, page=1, lang="en") -> List[Article]:
-    return get("open-information", size, page, lang)
+def fetch_articles(size=10, page=1, lang="en") -> List[Article]:
+    return fetch("open-information", size, page, lang)
 
 
 if __name__ == "__main__":
-    print(flash_news())
-    print(articles())
+    print(fetch_flash_news())
+    # print(fetch_articles())
